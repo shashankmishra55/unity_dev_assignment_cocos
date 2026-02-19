@@ -1,4 +1,4 @@
-import { _decorator, Component, Prefab, instantiate, Node, UITransform, SpriteFrame } from 'cc';
+import { _decorator, Component, Prefab, instantiate, Node, UITransform, SpriteFrame, tween, view } from 'cc';
 import { Card } from './Card';
 import { CardModel } from './CardModel';
 
@@ -20,11 +20,15 @@ export class GameManager extends Component {
     private secondCard: Card = null;
     private isChecking = false;
 
-    private boardPadding: number = 40;   // space from board edge
+    private boardPadding: number = 20;   // space from board edge
     private cardSpacing: number = 20;    // space between cards
 
+    private flippedQueue: Card[] = [];
+
     start() {
+       this.scheduleOnce(() => {
         this.generateBoard();
+    }, 0);
     }
 
     generateBoard() {
@@ -33,7 +37,6 @@ export class GameManager extends Component {
         const cols = 4;
 
         const boardSize = this.board.getComponent(UITransform).contentSize;
-
         const usableWidth = boardSize.width - this.boardPadding * 2;
         const usableHeight = boardSize.height - this.boardPadding * 2;
 
@@ -45,13 +48,18 @@ export class GameManager extends Component {
         const cellWidth = (usableWidth - totalSpacingX) / cols;
         const cellHeight = (usableHeight - totalSpacingY) / rows;
 
+        // Keep aspect ratio
+        const uniformScale = Math.min(cellWidth / 200, cellHeight / 300);
 
         // Final card size
-        const cardWidth = (usableWidth - totalSpacingX) / cols;
-        const cardHeight = (usableHeight - totalSpacingY) / rows;
+        const finalCardWidth = 200 * uniformScale;
+        const finalCardHeight = 300 * uniformScale;
 
-        // Keep aspect ratio
-        const uniformScale = Math.min(cardWidth / 200, cardHeight / 300);
+        const gridWidth = cols * finalCardWidth + totalSpacingX;
+        const gridHeight = rows * finalCardHeight + totalSpacingY;
+
+        const startX = -gridWidth / 2 + finalCardWidth / 2;
+        const startY = gridHeight / 2 - finalCardHeight / 2;
 
         const totalCards = rows * cols;
         const ids: number[] = [];
@@ -75,11 +83,8 @@ export class GameManager extends Component {
             const row = Math.floor(index / cols);
             const col = index % cols;
 
-            const startX = -usableWidth / 2 + cardWidth / 2 + this.boardPadding;
-            const startY = usableHeight / 2 - cardHeight / 2 - this.boardPadding ;
-
-            const x = startX + col * (cardWidth + this.cardSpacing);
-            const y = startY - row * (cardHeight + this.cardSpacing);
+            const x = startX + col * (finalCardWidth + this.cardSpacing);
+            const y = startY - row * (finalCardHeight + this.cardSpacing);
 
             node.setParent(this.board);
             node.setPosition(x, y);
@@ -94,45 +99,40 @@ export class GameManager extends Component {
         });
     }
 
-    onCardFlipped(card: Card, showFront) {
-        if(!showFront) return; // Only consider when a card is flipped to show front
-        if (!this.firstCard) {
-            this.firstCard = card;
-        } 
-        else if (!this.secondCard && card !== this.firstCard) {
-            this.secondCard = card;
-            this.checkMatch();
+    public onCardFlipped(card: Card): void {
+        // Add card to queue
+        this.flippedQueue.push(card);
+
+        // If at least 2 cards, resolve next pair
+        if (this.flippedQueue.length >= 2) {
+
+            const cardA = this.flippedQueue.shift();
+            const cardB = this.flippedQueue.shift();
+
+            this.resolvePair(cardA!, cardB!);
         }
     }
 
-    checkMatch() {
+    private resolvePair(cardA: Card, cardB: Card): void {
 
-        this.isChecking = true;
-
-        const modelA = this.firstCard.getModel();
-        const modelB = this.secondCard.getModel();
+    const modelA = cardA.getModel();
+    const modelB = cardB.getModel();
 
         if (modelA.id === modelB.id) {
-
+            // Match found
             modelA.isMatched = true;
             modelB.isMatched = true;
-
-            this.resetTurn();
+            cardA.onCardMatched();
+            cardB.onCardMatched();
 
         } else {
 
-            setTimeout(() => {
-                this.firstCard.flip(false);
-                this.secondCard.flip(false);
-                this.resetTurn();
-            }, 700);
+            // Mismatch — schedule flip back
+            this.scheduleOnce(() => {
+                cardA.flip(false);
+                cardB.flip(false);
+            }, 0.7);
         }
-    }
-
-    resetTurn() {
-        this.firstCard = null;
-        this.secondCard = null;
-        this.isChecking = false;
     }
 
     shuffle(array: number[]) {

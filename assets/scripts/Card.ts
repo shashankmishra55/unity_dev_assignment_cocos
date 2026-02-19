@@ -1,4 +1,4 @@
-import { _decorator, Component, Sprite, tween, Vec3 } from 'cc';
+import { _decorator, Button, Component, Sprite, tween, UIOpacity, Vec3 } from 'cc';
 import { CardModel } from './CardModel';
 
 const { ccclass, property } = _decorator;
@@ -38,18 +38,20 @@ export class Card extends Component {
         const originalScale = this.node.scale.clone();
 
         tween(this.node)
-            .to(0.12, { 
+            .to(0.2, { 
                 scale: new Vec3(0, originalScale.y, originalScale.z)
             })
             .call(() => {
                 this.setFace(showFront);
             })
-            .to(0.12, { 
+            .to(0.2, { 
                 scale: new Vec3(originalScale.x, originalScale.y, originalScale.z)
             })
             .call(() => {
                 this.isAnimating = false;
-                this.node.emit("CARD_FLIPPED", this, showFront);  
+                if(showFront) {
+                    this.node.emit("CARD_FLIPPED", this);
+                }
             })
             .start();
     }
@@ -63,5 +65,13 @@ export class Card extends Component {
 
     getModel(): CardModel {
         return this.model;
+    }
+
+    onCardMatched() {
+        const opacity = this.getComponent(UIOpacity);
+        if (!opacity) return;
+        tween(opacity)
+        .to(0.25, { opacity: 100 })
+        .start();
     }
 }
