@@ -1,14 +1,10 @@
-import { _decorator, Component, Node } from 'cc';
-const { ccclass, property } = _decorator;
+export class CardModel {
 
-@ccclass('CardModel')
-export class CardModel extends Component {
-    start() {
+    id: number;
+    isFlipped: boolean = false;
+    isMatched: boolean = false;
 
-    }
-
-    update(deltaTime: number) {
-        
+    constructor(id: number) {
+        this.id = id;
     }
 }
-
