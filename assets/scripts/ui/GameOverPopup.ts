@@ -1,4 +1,5 @@
 import { _decorator, Component, Label, tween, UIOpacity, Vec3 } from 'cc';
+import { SoundManager } from '../core/SoundManager';
 
 const { ccclass, property } = _decorator;
 
@@ -12,6 +13,7 @@ export class GameOverPopup extends Component {
         this.node.active = true;
         this.scoreLabel.string = `You scored: ${score}`;
         this.playAnimation();
+        SoundManager.Instance.playGameOver();
     }
 
     hide() {

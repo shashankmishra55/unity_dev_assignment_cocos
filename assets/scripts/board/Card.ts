@@ -1,5 +1,6 @@
 import { _decorator, Button, Component, Sprite, tween, UIOpacity, Vec3 } from 'cc';
 import { CardModel } from './CardModel';
+import { SoundManager } from '../core/SoundManager';
 
 const { ccclass, property } = _decorator;
 
@@ -25,14 +26,13 @@ export class Card extends Component {
         if (this.isAnimating) return;
         if (this.model.isMatched) return;
         if (this.model.isFlipped) return;
-
+        SoundManager.Instance.playFlip();
         this.flip(true);
     }
 
     flip(showFront: boolean) {
 
         if (this.isAnimating) return;
-
         this.isAnimating = true;
 
         const originalScale = this.node.scale.clone();

@@ -4,6 +4,7 @@ import { ScoreSystem } from '../systems/ScoreSystem';
 import { MatchSystem } from '../systems/MatchSystem';
 import { CardModel } from '../board/CardModel';
 import { LevelConfig } from '../configs/GameConfig';
+import { SoundManager } from './SoundManager';
 
 const { ccclass, property } = _decorator;
 
@@ -131,6 +132,7 @@ export class GameManager extends Component {
                 cardA,
                 cardB,
                 (a, b) => {
+                    SoundManager.Instance.playMismatch();
                     this.scheduleOnce(() => {
                         a.flip(false);
                         b.flip(false);
@@ -141,9 +143,9 @@ export class GameManager extends Component {
     }
 
     private onMatchFound(){
+        SoundManager.Instance.playMatch();
         this.scoreSystem.addMatch();
         this.matchedPairs++;
-        console.log("Match found!", "Total matched pairs:", this.matchedPairs, "Total pairs:", this.totalPairs);
         if (this.matchedPairs >= this.totalPairs) {
             GameManager.events.emit('GAME_COMPLETE', this.scoreSystem.getScore());
         }
