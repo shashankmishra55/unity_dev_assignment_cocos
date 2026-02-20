@@ -32,6 +32,8 @@ export class GameManager extends Component {
 
     private boardPadding: number = 20;
     private cardSpacing: number = 20;
+    private matchedPairs: number = 0;
+    private totalPairs: number = 0;
     
 
     start() {
@@ -41,7 +43,7 @@ export class GameManager extends Component {
         });
 
         this.matchSystem = new MatchSystem(
-            () => this.scoreSystem.addMatch(),
+            this.onMatchFound.bind(this),
             () => this.scoreSystem.addTurn()
         );
     }
@@ -138,6 +140,14 @@ export class GameManager extends Component {
             [array[i], array[j]] = [array[j], array[i]];
         }
     }
+
+    private onMatchFound() {
+    this.scoreSystem.addMatch()
+    this.matchedPairs++;
+    if (this.matchedPairs >= this.totalPairs) {
+        GameManager.events.emit('GAME_COMPLETE', this.scoreSystem.getScore());
+    }
+}
 
     public resetGame(): void {
 

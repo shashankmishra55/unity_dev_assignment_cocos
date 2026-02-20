@@ -3,7 +3,7 @@ import { Card } from '../board/Card';
 import { ScoreSystem } from '../systems/ScoreSystem';
 import { MatchSystem } from '../systems/MatchSystem';
 import { CardModel } from '../board/CardModel';
-import { LevelConfig } from '../ui/MainMenuScreen';
+import { LevelConfig } from '../configs/GameConfig';
 
 const { ccclass, property } = _decorator;
 
@@ -33,6 +33,9 @@ export class GameManager extends Component {
 
     private boardPadding: number = 20;
     private cardSpacing: number = 20;
+
+    private matchedPairs: number = 0;
+    private totalPairs: number = 0;
     
 
     start() {
@@ -42,7 +45,7 @@ export class GameManager extends Component {
         });
 
         this.matchSystem = new MatchSystem(
-            () => this.scoreSystem.addMatch(),
+            this.onMatchFound.bind(this),
             () => this.scoreSystem.addTurn()
         );
     }
@@ -51,6 +54,7 @@ export class GameManager extends Component {
         console.log("Starting game with level config:", level);
         this.rows = level.rows;
         this.cols = level.cols;
+        this.totalPairs = (this.rows * this.cols) / 2;
         this.generateBoard();
     }
 
@@ -136,6 +140,15 @@ export class GameManager extends Component {
         }
     }
 
+    private onMatchFound(){
+        this.scoreSystem.addMatch();
+        this.matchedPairs++;
+        console.log("Match found!", "Total matched pairs:", this.matchedPairs, "Total pairs:", this.totalPairs);
+        if (this.matchedPairs >= this.totalPairs) {
+            GameManager.events.emit('GAME_COMPLETE', this.scoreSystem.getScore());
+        }
+    }
+
     private shuffle(array: number[]) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -153,6 +166,8 @@ export class GameManager extends Component {
         });
         this.board.removeAllChildren();
         this.scoreSystem?.reset();
+        this.matchedPairs = 0;  
+        this.totalPairs = 0;
 }
 
 }
