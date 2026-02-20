@@ -466,7 +466,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 100,
+      "y": 200,
       "z": 0
     },
     "_lrot": {
@@ -644,7 +644,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 0,
+      "y": 100,
       "z": 0
     },
     "_lrot": {
@@ -779,7 +779,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -100,
+      "y": 0,
       "z": 0
     },
     "_lrot": {
@@ -921,7 +921,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -188.312,
+      "y": -100,
       "z": 0
     },
     "_lrot": {
@@ -3395,7 +3395,7 @@
         "__id__": 96
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 100
@@ -3642,7 +3642,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 316.11275201612904,
+      "width": 339.4507560483871,
       "height": 75.6
     },
     "_anchorPoint": {
@@ -3672,7 +3672,7 @@
       "b": 0,
       "a": 255
     },
-    "_string": "Flip Match",
+    "_string": "CARD Match",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 72.65625,
@@ -3772,7 +3772,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -72,
+      "y": -72.00000000000006,
       "z": 0
     },
     "_lrot": {
@@ -3810,8 +3810,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 600,
-      "height": 504
+      "width": 1080,
+      "height": 550
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -3832,10 +3832,10 @@
     "__prefab": null,
     "_alignFlags": 45,
     "_target": null,
-    "_left": 0.3046875,
-    "_right": 0.3046875,
-    "_top": 0.25,
-    "_bottom": 0.05,
+    "_left": 0.078125,
+    "_right": 0.078125,
+    "_top": 0.21805555555555567,
+    "_bottom": 0.01805555555555549,
     "_horizontalCenter": 0,
     "_verticalCenter": 0,
     "_isAbsLeft": false,
@@ -3845,7 +3845,7 @@
     "_isAbsHorizontalCenter": true,
     "_isAbsVerticalCenter": true,
     "_originalWidth": 500,
-    "_originalHeight": 2,
+    "_originalHeight": 60,
     "_alignMode": 1,
     "_lockFlags": 0,
     "_id": "e79qjeba1FBb0gpkXc/krw"
@@ -3860,23 +3860,23 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "_resizeMode": 0,
+    "_resizeMode": 2,
     "_layoutType": 3,
     "_cellSize": {
       "__type__": "cc.Size",
-      "width": 40,
-      "height": 40
+      "width": 200,
+      "height": 180
     },
     "_startAxis": 0,
-    "_paddingLeft": 50,
-    "_paddingRight": 50,
+    "_paddingLeft": 30,
+    "_paddingRight": 30,
     "_paddingTop": 30,
     "_paddingBottom": 30,
     "_spacingX": 50,
-    "_spacingY": 30,
+    "_spacingY": 50,
     "_verticalDirection": 1,
     "_horizontalDirection": 0,
-    "_constraint": 2,
+    "_constraint": 0,
     "_constraintNum": 3,
     "_affectedByScale": false,
     "_isAlign": false,
