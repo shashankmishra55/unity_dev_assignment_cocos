@@ -33,6 +33,24 @@ export class ScoreSystem {
         return this.score;
     }
 
+    public getTurns() {
+        return this.turnCount;
+    }
+
+    public setMatchCount(count: number) {
+        this.matchCount = count;
+        this.emit();
+    }
+
+    public setScore(score: number) {  
+        this.score = score; 
+    }
+    
+    public setTurns(turns: number) {  
+        this.turnCount = turns; 
+        this.emit();
+    }   
+
     public reset(): void {
         this.matchCount = 0;
         this.turnCount = 0;

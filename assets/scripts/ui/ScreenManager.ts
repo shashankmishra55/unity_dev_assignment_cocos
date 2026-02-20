@@ -31,7 +31,6 @@ export class ScreenManager extends Component {
 
             const screen = node.getComponent(BaseScreen);
             if (!screen) {
-                console.warn(`Node ${node.name} has no BaseScreen`);
                 continue;
             }
 
@@ -47,7 +46,6 @@ export class ScreenManager extends Component {
     public open(id: ScreenId, data?: any): void {
         const next = this.screenMap.get(id);
         if (!next) {
-            console.warn(`Screen ${id} not found`);
             return;
         }
 

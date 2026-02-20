@@ -5,6 +5,7 @@ import { MatchSystem } from '../systems/MatchSystem';
 import { CardModel } from '../board/CardModel';
 import { LevelConfig } from '../configs/GameConfig';
 import { SoundManager } from './SoundManager';
+import { SaveData, SaveManager } from './SaveManager';
 
 const { ccclass, property } = _decorator;
 
@@ -37,9 +38,12 @@ export class GameManager extends Component {
 
     private matchedPairs: number = 0;
     private totalPairs: number = 0;
+
+    private currentLevelData: LevelConfig | null = null;
+    private cards: CardModel[] = [];
     
 
-    start() {
+    onLoad() {
 
         this.scoreSystem = new ScoreSystem((data) => {
             GameManager.events.emit('GAME_UPDATED', data);
@@ -52,10 +56,11 @@ export class GameManager extends Component {
     }
 
     startGame(level: LevelConfig): void {
-        console.log("Starting game with level config:", level);
+        this.currentLevelData = level;
         this.rows = level.rows;
         this.cols = level.cols;
         this.totalPairs = (this.rows * this.cols) / 2;
+        this.loadGame();
         this.generateBoard();
     }
 
@@ -91,20 +96,15 @@ export class GameManager extends Component {
         }
 
         this.shuffle(ids);
-
+        this.cards = this.cards.length > 0 ? this.cards : ids.map(id => new CardModel(id));
         ids.forEach((id, index) => {
-
             const node = instantiate(this.cardPrefab);
             const card = node.getComponent(Card)!;
-
-            const model = new CardModel(id);
-            card.init(model, this.cardSprites[id]);
-
+            const model = this.cards[index] || new CardModel(id);
+            card.init(model, this.cardSprites[model.id]);
             node.setParent(this.board);
-
             const row = Math.floor(index / this.cols);
             const col = index % this.cols;
-
             const x = startX + col * (finalCardWidth + this.cardSpacing);
             const y = startY - row * (finalCardHeight + this.cardSpacing);
 
@@ -122,12 +122,10 @@ export class GameManager extends Component {
     public onCardFlipped(card: Card): void {
 
         this.flippedQueue.push(card);
-
         if (this.flippedQueue.length >= 2) {
 
             const cardA = this.flippedQueue.shift()!;
             const cardB = this.flippedQueue.shift()!;
-
             this.matchSystem.resolvePair(
                 cardA,
                 cardB,
@@ -136,6 +134,7 @@ export class GameManager extends Component {
                     this.scheduleOnce(() => {
                         a.flip(false);
                         b.flip(false);
+                        this.saveGame();
                     }, 0.7);
                 }
             );
@@ -146,7 +145,9 @@ export class GameManager extends Component {
         SoundManager.Instance.playMatch();
         this.scoreSystem.addMatch();
         this.matchedPairs++;
+        this.saveGame();
         if (this.matchedPairs >= this.totalPairs) {
+            SaveManager.clearLevelData(this.currentLevelData!.id);
             GameManager.events.emit('GAME_COMPLETE', this.scoreSystem.getScore());
         }
     }
@@ -158,8 +159,23 @@ export class GameManager extends Component {
         }
     }
 
-    public resetGame(): void {
+    saveGame(): void {
+        if(!this.currentLevelData) return;
+        let saveData: SaveData = {
+            currentLevel: this.currentLevelData!,
+            score: this.scoreSystem.getScore(),
+            matchedPairs: this.matchedPairs,
+            turns: this.scoreSystem.getTurns(),
+            cardStates: this.cards.map(card => ({
+                id: card.id,
+                isFlipped: card.isMatched,
+                isMatched: card.isMatched
+            }))
+        };
+        SaveManager.save(saveData);
+    }
 
+    public resetGame(): void {
         this.unscheduleAllCallbacks();
         this.flippedQueue.length = 0;
         this.board.children.forEach(child => {
@@ -170,6 +186,18 @@ export class GameManager extends Component {
         this.scoreSystem?.reset();
         this.matchedPairs = 0;  
         this.totalPairs = 0;
-}
+        this.currentLevelData = null;
+        this.cards = [];
+    }
 
+    private loadGame(): void {
+        const saveData = SaveManager.load(this.currentLevelData!.id);
+        if (saveData) {
+            this.scoreSystem.setScore(saveData.score);
+            this.matchedPairs = saveData.matchedPairs;
+            this.scoreSystem.setTurns(saveData.turns);
+            this.scoreSystem.setMatchCount(saveData.matchedPairs);
+            this.cards = saveData.cardStates;
+        }
+    }
 }

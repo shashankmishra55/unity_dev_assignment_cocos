@@ -1,4 +1,4 @@
-import { _decorator, Button, Component, Sprite, tween, UIOpacity, Vec3 } from 'cc';
+import { _decorator, Button, Component, Sprite, SpriteFrame, tween, UIOpacity, Vec3 } from 'cc';
 import { CardModel } from './CardModel';
 import { SoundManager } from '../core/SoundManager';
 
@@ -16,10 +16,10 @@ export class Card extends Component {
     private model: CardModel;
     private isAnimating = false;
 
-    init(model: CardModel, spriteFrame) {
+    init(model: CardModel, spriteFrame: SpriteFrame) {
         this.model = model;
         this.front.spriteFrame = spriteFrame;
-        this.setFace(false);
+        this.setFace(model.isMatched || model.isFlipped);
     }
 
     onClick() {
@@ -61,6 +61,9 @@ export class Card extends Component {
         this.front.node.active = showFront;
         this.back.node.active = !showFront;
         this.model.isFlipped = showFront;
+        if(this.model.isMatched) {
+            this.onCardMatched();
+        }
     }
 
     getModel(): CardModel {

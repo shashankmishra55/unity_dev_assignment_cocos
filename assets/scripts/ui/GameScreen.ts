@@ -5,6 +5,7 @@ import { ScreenId } from './ScreenId';
 import { GameManager } from '../core/GameManager';
 import { LevelConfig, LEVELS } from '../configs/GameConfig';
 import { GameOverPopup } from './GameOverPopup';
+import { SaveManager } from '../core/SaveManager';
 
 const { ccclass, property } = _decorator;
 
@@ -76,12 +77,19 @@ export class GameScreen extends BaseScreen {
     onNextLevelButtonClicked() {
         this.resetGame();
         let nextLevelData = LEVELS.find(level => level.id === this.currentLevelData!.id + 1);
-        console.log("Next level data:", nextLevelData);
         if (nextLevelData) {
             this.startGame(nextLevelData);
         } else {
             this.startGame(this.currentLevelData);
         }
         
+    }
+
+    onClearButtonClicked() {
+        if(this.currentLevelData) {
+            SaveManager.clearLevelData(this.currentLevelData.id);
+            this.resetGame();
+            this.startGame(this.currentLevelData);
+        }
     }
 }

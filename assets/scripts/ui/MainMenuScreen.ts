@@ -37,11 +37,6 @@ export class MainMenuScreen extends BaseScreen {
         
     }
 
-    
-    public onStartClicked(): void {
-        ScreenManager.instance.open(ScreenId.GAME, 1);
-    }
-
     onLevelSelected(level: LevelConfig): void {
         ScreenManager.instance.open(ScreenId.GAME, level);
     }

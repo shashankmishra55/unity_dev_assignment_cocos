@@ -28,7 +28,6 @@ export class SoundManager extends Component {
     }
 
     public playFlip() {
-        console.log("Playing flip sound");
         if (!this.soundEnabled) return;
         this.audioSource.playOneShot(this.flipClip, 0.2);
     }
@@ -40,7 +39,7 @@ export class SoundManager extends Component {
 
     public playMismatch() {
         if (!this.soundEnabled) return;
-        this.audioSource.playOneShot(this.mismatchClip, 0.6);
+        this.audioSource.playOneShot(this.mismatchClip, 0.2);
     }
 
     public playGameOver() {
