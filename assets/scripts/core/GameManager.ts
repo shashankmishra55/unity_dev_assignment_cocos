@@ -1,8 +1,9 @@
 import { _decorator, Component, Prefab, instantiate, Node, UITransform, SpriteFrame, EventTarget } from 'cc';
-import { Card } from './board/Card';
-import { CardModel } from './board/CardModel';
-import { ScoreSystem } from './systems/ScoreSystem';
-import { MatchSystem } from './systems/MatchSystem';
+import { Card } from '../board/Card';
+import { ScoreSystem } from '../systems/ScoreSystem';
+import { MatchSystem } from '../systems/MatchSystem';
+import { CardModel } from '../board/CardModel';
+import { LevelConfig } from '../ui/MainMenuScreen';
 
 const { ccclass, property } = _decorator;
 
@@ -46,7 +47,10 @@ export class GameManager extends Component {
         );
     }
 
-    startGame(): void {
+    startGame(level: LevelConfig): void {
+        console.log("Starting game with level config:", level);
+        this.rows = level.rows;
+        this.cols = level.cols;
         this.generateBoard();
     }
 

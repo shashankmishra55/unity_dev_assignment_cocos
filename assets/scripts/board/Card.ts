@@ -1,5 +1,5 @@
 import { _decorator, Button, Component, Sprite, tween, UIOpacity, Vec3 } from 'cc';
-import { CardModel } from './board/CardModel';
+import { CardModel } from './CardModel';
 
 const { ccclass, property } = _decorator;
 
